@@ -33,7 +33,7 @@ impl Accountable for DebtAccount {
         if amount <= 0.0 {
             return Err("Invalid deposit amount".to_string());
         }
-        self.account.balance += amount;
+        self.account.balance -= amount;
         Ok(())
     }
 
@@ -43,24 +43,22 @@ impl Accountable for DebtAccount {
 
     fn calculate_future_balance(&self, monthly_payment: f64, months: u32) -> f64 {
    
-        let monthly_interest_rate:f64 = (self.account.interest_rate / 12.0).into();
-        
-        // println!("Annual interest {}", self.interest_rate);
-        // println!("Monthly interest {}", monthly_interest_rate);
-        // let mut ending_balance: f64 = self.balance;
-        // let mut _months: u32 = 0;
-        // while ending_balance > 0.0 {
-        //     ending_balance = (ending_balance - monthly_payment) * (1.0 + monthly_interest_rate);
-        //     _months = _months + 1;
-        // }
-        
-        let _months: u32 = (f64::ln( 1.0 - ((monthly_interest_rate/monthly_payment) * self.account.balance )) / f64::ln(1.0 + monthly_interest_rate)).abs().ceil() as u32;
-
-        return _months
+        if self.account.interest_rate >= 0.0 {
+            panic!("Interest rate must be negative for a depreciating asset.");
+        }
+    
+        let future_value = self.account.balance * (1.0 + self.account.interest_rate).powf(months as f64)
+            - monthly_payment * ((1.0 + self.account.interest_rate).powf(months as f64) - 1.0) / self.account.interest_rate;
+    
+        return future_value
     }
 
     fn withdraw(&mut self, amount: f64) -> Result<(), String> {
-        todo!()
+        if amount <= 0.0 {
+            return Err("Invalid deposit amount".to_string());
+        }
+        self.account.balance += amount;
+        Ok(())
     }
 
     fn calculate_interest(&self) -> f64 {

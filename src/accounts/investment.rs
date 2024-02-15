@@ -39,28 +39,36 @@ impl Accountable for InvestmentAccount {
         return future_value
     }
 
-    fn get_name(&self) -> &str {
-        todo!()
+    fn get_balance(&self) -> f64 {
+        return self.account.balance;
     }
 
-    fn get_balance(&self) -> f64 {
-        todo!()
+    fn get_name(&self) -> &str {
+        return self.account.name.as_str()
     }
 
     fn get_interest_rate(&self) -> f64 {
-        todo!()
-    }
-
-    fn withdraw(&mut self, amount: f64) -> Result<(), String> {
-        todo!()
+        return self.account.interest_rate;
     }
 
     fn deposit(&mut self, amount: f64) -> Result<(), String> {
-        todo!()
+        if amount <= 0.0 {
+            return Err("Invalid deposit amount".to_string());
+        }
+        self.account.balance += amount;
+        Ok(())
     }
 
     fn calculate_interest(&self) -> f64 {
         todo!()
+    }
+
+    fn withdraw(&mut self, amount: f64) -> Result<(), String> {
+        if amount <= 0.0 {
+            return Err("Invalid deposit amount".to_string());
+        }
+        self.account.balance -= amount;
+        Ok(())
     }
 
 }
